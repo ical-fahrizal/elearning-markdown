@@ -1,0 +1,108 @@
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- search form -->
+      <form action="#" method="get" class="sidebar-form">
+        <div class="input-group">
+          <input type="text" id="searchKeyWord" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                </button>
+              </span>
+        </div>
+      </form>
+      <!-- /.search form -->
+
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu" id="allMenu">
+      </ul>
+      
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+
+<script type="text/javascript">
+
+  $(document).ready(function(){
+    dataMenu();
+
+  });
+
+  function dataMenu(){
+    var FindUrl = BASE_URL_API+"/data/dataInfo.json";
+    var listMenu="";
+    $.getJSON(FindUrl, function(data) {
+      aaData = data.aaData;
+      for(var i=0;i<aaData.length;i++){
+        var menuLi = "";
+
+        menuLi = '<li class="treeview">';
+        menuLi = menuLi+ '<a href="#" class="showcontent" id="'+aaData[i].id+'">';
+        menuLi = menuLi+ '<span>'+aaData[i].title+'</span>';
+        menuLi = menuLi+ '</a>';
+        menuLi = menuLi+ '</li>';
+
+        listMenu=listMenu+menuLi;
+      }
+    }).done(function() {
+      $("#allMenu").html(listMenu);
+      onFunc();
+    });
+
+  }
+
+  function onFunc(){
+    $('#content-form').load('pages/menu/introduction.html');
+
+    $('.showcontent').click(function(){
+      var menu = $(this).attr('id');
+      var dataMenu = aaData.find(v => v.id == menu);
+      $('#content-form').load(dataMenu.pages);
+
+    });
+  }
+
+  $('#searchKeyWord').keyup(function(){
+    var searchField = $(this).val();
+    if(searchField === '')  {
+      dataMenu();
+      return;
+    }
+    
+    $("#allMenu").html("");
+    var regex = new RegExp(searchField, "i");
+    var listMenu="";
+    var count = 1;
+    $.each(aaData, function(key, val){
+      
+      valKeyWord = val.keyWord;
+      for(var i=0;i<valKeyWord.length;i++){
+        if (valKeyWord[i].search(regex) != -1) {
+          var menuLi = "";
+
+          menuLi = '<li class="treeview">';
+          menuLi = menuLi+ '<a href="#" class="showcontent" id="'+val.id+'">';
+          menuLi = menuLi+ '<span>'+val.title+'</span>';
+          menuLi = menuLi+ '<br><i><small>'+'..'+valKeyWord[i]+'..'+'</small></i>';
+          menuLi = menuLi+ '</a>';
+          menuLi = menuLi+ '</li>';
+          
+          listMenu = listMenu + menuLi;
+          break;
+        }
+      }
+      
+    });
+    $('#allMenu').html(listMenu);
+
+    $('.showcontent').click(function(){
+      var menu = $(this).attr('id');
+      var dataMenu = aaData.find(v => v.id == menu);
+      $('#content-form').load(dataMenu.pages);
+
+    });
+    
+  });
+
+</script>

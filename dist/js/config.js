@@ -1,0 +1,1 @@
+var BASE_URL_API = location.origin + '/' +location.pathname.split('/')[1]; ; 
